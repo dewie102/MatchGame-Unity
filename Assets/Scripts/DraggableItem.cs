@@ -10,6 +10,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private CanvasGroup canvasGroup;
     private Transform originalParent;
     public ItemSlot originSlot;
+    public bool droppedOnSlot;
 
 
     void Awake()
@@ -21,8 +22,9 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        droppedOnSlot = false;
         originSlot = GetComponentInParent<ItemSlot>();
-
+        Debug.Log($"What am I? {gameObject}\n originSlot: {originSlot}\nParent: {transform.parent.gameObject}");
         originalParent = transform.parent;
         transform.SetParent(canvas.transform);
         canvasGroup.blocksRaycasts = false;
@@ -35,12 +37,15 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        transform.SetParent(originalParent);
-        transform.localPosition = Vector3.zero;
+        if (!droppedOnSlot)
+        {
+            transform.SetParent(originalParent);
+            transform.localPosition = Vector3.zero;
+        }
         canvasGroup.blocksRaycasts = true;
     }
 
-    public void SetItem(ItemData data)
+    public void SetItemData(ItemData data)
     {
         itemData = data;
         GetComponent<Image>().sprite = data.icon;

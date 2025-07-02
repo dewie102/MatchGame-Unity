@@ -13,17 +13,17 @@ public class DropSlot : MonoBehaviour, IDropHandler
     public void OnDrop(PointerEventData eventData)
     {
         DraggableItem dropped = eventData.pointerDrag?.GetComponent<DraggableItem>();
-        if(dropped == null) return;
+        if (dropped == null) return;
 
         ItemSlot originSlot = dropped.originSlot;
-        if(originSlot == itemSlot) return;
+        if (originSlot == itemSlot) return;
 
-        if(itemSlot.HasItem)
+        if (itemSlot.HasItem)
         {
             Debug.Log($"ItemSlot: Has Item");
             DraggableItem existing = itemSlot.CurrentItem;
 
-            if(existing != null && existing.itemData == dropped.itemData && dropped.itemData.nextLevel != null)
+            if (existing != null && existing.itemData == dropped.itemData && dropped.itemData.nextLevel != null)
             {
                 // Attampt merge
                 MergeManager.Instance.Merge(existing, dropped, this.transform);
@@ -44,5 +44,7 @@ public class DropSlot : MonoBehaviour, IDropHandler
             itemSlot.SetItem(dropped);
             Debug.Log($"ItemSlot: Does Not Have An Item");
         }
+
+        dropped.droppedOnSlot = true;
     }
 }

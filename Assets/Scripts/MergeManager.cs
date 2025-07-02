@@ -1,14 +1,17 @@
+using System;
 using UnityEngine;
 
 public class MergeManager : MonoBehaviour
 {
-    public static MergeManager Instance {get; private set;}
+    public static MergeManager Instance { get; private set; }
+
+    public static event Action<ItemData> OnItemMerged;
 
     public GameObject itemPrefab;
 
     private void Awake()
     {
-        if(Instance == null) Instance = this;
+        if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
@@ -19,9 +22,12 @@ public class MergeManager : MonoBehaviour
         Destroy(a.gameObject);
         Destroy(b.gameObject);
 
-        GameObject newItem = Instantiate(itemPrefab, slot);
-        var draggable = newItem.GetComponent<DraggableItem>();
-        draggable.SetItem(newData);
-        newItem.transform.localPosition = Vector3.zero;
+        GridManager.Instance.SpawnItemAtSlot(slot.GetComponent<ItemSlot>(), newData);
+        RaiseItemMerged(newData);
+    }
+
+    public static void RaiseItemMerged(ItemData data)
+    {
+        OnItemMerged?.Invoke(data);
     }
 }
